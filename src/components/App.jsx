@@ -7,8 +7,6 @@ import { Div } from './App.styled';
 function App() {
   const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
 
   const addContact = useCallback(
     (name, number) => {
@@ -22,7 +20,7 @@ function App() {
       const newContact = {
         name: name,
         number: number,
-        id: nanoid(),
+        id: nanoid(), // Оновлений імпорт
       };
 
       setContacts((prevContacts) => [...prevContacts, newContact]);
