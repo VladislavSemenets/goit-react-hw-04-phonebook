@@ -1,9 +1,10 @@
+import React from 'react';
 import { Button, List, ListItem } from './ListContact.styled';
 
-export const ListContact = ({ contacts, onDelete }) => {
+const ListContact = ({ contacts, onDelete }) => {
   return (
     <List>
-      {contacts.map(contact => (
+      {contacts.map((contact) => (
         <ListItem key={contact.id}>
           <p>
             {contact.name}: {contact.number}
@@ -14,3 +15,5 @@ export const ListContact = ({ contacts, onDelete }) => {
     </List>
   );
 };
+
+export default ListContact;

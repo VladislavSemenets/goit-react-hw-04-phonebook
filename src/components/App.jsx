@@ -1,74 +1,66 @@
-import { useState, useEffect } from 'react';
-import { FormPhonebook } from './FormPhonebook/FormPhonebook';
-import { ListContact } from './ListContact/ListContact';
-import { SearchBar } from './SeachBar/SeachBar';
+import React, { useState, useEffect, useCallback } from 'react';
+import ContactForm from './ContactForm';
+import ContactList from './ContactList';
+import { nanoid } from 'nanoid';
+import { Div } from './App.styled';
 
-const localStorageKey = 'contacts';
+function App() {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-const getContacts = () => {
-  const contacts = localStorage.getItem(localStorageKey);
-  if (contacts !== null) {
-    return JSON.parse(contacts);
-  } else {
-    return [];
-  }
-};
+  const addContact = useCallback(
+    (name, number) => {
+      const isNameExists = contacts.some((contact) => contact.name === name);
 
-export const App = () => {
-  const [contacts, setContacts] = useState(getContacts);
-  const [filters, setFilters] = useState('');
+      if (isNameExists) {
+        alert(`${name} is already in contacts`);
+        return;
+      }
 
-  const visibleContact = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filters.toLowerCase())
+      const newContact = {
+        name: name,
+        number: number,
+        id: nanoid(),
+      };
+
+      setContacts((prevContacts) => [...prevContacts, newContact]);
+    },
+    [contacts]
   );
 
-  useEffect(() => {
-    localStorage.setItem(localStorageKey, JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addName = newName => {
-    const searchName = contacts.map(cont => cont.name).includes(newName.name);
-
-    if (searchName) {
-      alert(`${newName.name} is already in contacts`);
-    } else {
-      setContacts(prevState => [...prevState, newName]);
-    }
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
   };
 
-  const changeFilter = newFilter => {
-    setFilters(newFilter);
-  };
-
-  const handleDelete = contactId => {
-    setContacts(prevState =>
-      prevState.filter(contact => contact.id !== contactId)
+  const handleDeleteContact = (id) => {
+    setContacts((prevContacts) =>
+      prevContacts.filter((contact) => contact.id !== id)
     );
   };
 
-  return (
-    <>
-      <h1
-        style={{
-          textAlign: 'center',
-        }}
-      >
-        Phonebook
-      </h1>
-
-      <FormPhonebook onAdd={addName} />
-
-      <h2
-        style={{
-          textAlign: 'center',
-        }}
-      >
-        Contacts:
-      </h2>
-
-      <SearchBar seachFilter={filters} onChangeFilter={changeFilter} />
-
-      <ListContact contacts={visibleContact} onDelete={handleDelete} />
-    </>
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
   );
-};
+
+  return (
+    <Div>
+      <h1>Phonebook</h1>
+      <ContactForm addContact={addContact} />
+      <h2>Contacts</h2>
+      <input
+        type="text"
+        placeholder="Search contacts by name"
+        value={filter}
+        onChange={handleFilterChange}
+      />
+      <ContactList
+        contacts={filteredContacts}
+        onDeleteContact={handleDeleteContact}
+      />
+    </Div>
+  );
+}
+
+export default App;

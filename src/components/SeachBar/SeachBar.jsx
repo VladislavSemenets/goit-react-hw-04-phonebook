@@ -1,8 +1,8 @@
+import React from 'react';
 import { SeachFilter } from 'components/SeachBar/SeachFilter';
-
 import { Block } from './SeachBar.styled';
 
-export const SearchBar = ({ seachFilter, onChangeFilter }) => {
+const SearchBar = ({ seachFilter, onChangeFilter }) => {
   return (
     <Block>
       <p>Find contact by name</p>
@@ -10,3 +10,5 @@ export const SearchBar = ({ seachFilter, onChangeFilter }) => {
     </Block>
   );
 };
+
+export default SearchBar;

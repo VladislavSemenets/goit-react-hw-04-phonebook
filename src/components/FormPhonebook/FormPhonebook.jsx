@@ -1,4 +1,5 @@
-import { Formik, ErrorMessage } from 'formik';
+import React from 'react';
+import { Formik, Field, ErrorMessage, useFormik } from 'formik';
 import { Block, StyledField, StyledForm } from './FormPhonebook.styled';
 import { nanoid } from 'nanoid';
 import * as Yup from 'yup';
@@ -8,44 +9,47 @@ const schema = Yup.object().shape({
   number: Yup.string().min(3, 'Too Short!').required('Required'),
 });
 
-export const FormPhonebook = ({ onAdd }) => {
+const FormPhonebook = ({ onAdd }) => {
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      number: '',
+    },
+    validationSchema: schema,
+    onSubmit: (values, actions) => {
+      onAdd({ ...values, id: nanoid() });
+      actions.resetForm();
+    },
+  });
+
   return (
     <Block>
-      <Formik
-        initialValues={{
-          name: '',
-          number: '',
-        }}
-        validationSchema={schema}
-        onSubmit={(values, actions) => {
-          onAdd({ ...values, id: nanoid() });
-
-          actions.resetForm();
-        }}
-      >
+      <form onSubmit={formik.handleSubmit}>
         <StyledForm>
-          <label>Name</label>
-          <StyledField
+          <label htmlFor="name">Name</label>
+          <Field
             type="text"
+            id="name"
             name="name"
-            // pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+            as={StyledField}
             required
           />
           <ErrorMessage name="name" component="div" />
-          <label>Number</label>
-          <StyledField
+          <label htmlFor="number">Number</label>
+          <Field
             type="tel"
+            id="number"
             name="number"
-            //  pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
+            as={StyledField}
             required
           />
           <ErrorMessage name="number" component="div" />
 
           <button type="submit">Add contact</button>
         </StyledForm>
-      </Formik>
+      </form>
     </Block>
   );
 };
+
+export default FormPhonebook;
